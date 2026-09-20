@@ -1,0 +1,13 @@
+[Unit]
+Description=Weekly open-PR aging digest (Tuesday 09:30 IST / 04:00 UTC)
+
+[Timer]
+OnCalendar=Tue *-*-* 04:00:00
+# Persistent=false — do NOT catch up on missed runs. Better to skip a day than
+# risk double-posting if the box was offline. Slack messages are user-visible
+# and double-posts in #technology-team are a credibility cost.
+Persistent=false
+RandomizedDelaySec=120
+
+[Install]
+WantedBy=timers.target

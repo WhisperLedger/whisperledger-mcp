@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  whisperledger-mcp:
+    build: .
+    container_name: whisperledger-mcp
+    restart: unless-stopped
+    ports:
+      - "5005:5005"
+    environment:
+      - MCP_PORT=5005
+      - MCP_HOST=0.0.0.0
+    volumes:
+      - /Users/tanmayagarwal/TanmayProjects:/projects:ro

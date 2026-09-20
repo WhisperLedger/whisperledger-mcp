@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Admin — Jarvis Portal{% endblock %}
+
+{% block content %}
+<div class="mb-8 flex items-center justify-between">
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+    <p class="text-gray-500 text-sm mt-1">Manage engineers and API key usage</p>
+  </div>
+  <span class="text-sm text-gray-500">{{ users_meta|length }} users</span>
+</div>
+
+<div class="bg-white rounded-lg border border-gray-200">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left text-gray-500 text-xs border-b border-gray-200 bg-gray-50">
+        <th class="px-6 py-3 font-medium">Engineer</th>
+        <th class="px-6 py-3 font-medium">Active keys</th>
+        <th class="px-6 py-3 font-medium">Last active</th>
+        <th class="px-6 py-3 font-medium">API calls</th>
+        <th class="px-6 py-3 font-medium">Fix jobs</th>
+        <th class="px-6 py-3 font-medium">MCP calls</th>
+        <th class="px-6 py-3 font-medium">Spend</th>
+        <th class="px-6 py-3 font-medium">Write access</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for meta in users_meta %}
+      {% set u = meta.user %}
+      {% set usage = meta.usage %}
+      <tr class="border-b border-gray-50 hover:bg-gray-50">
+        <td class="px-6 py-4">
+          <div class="font-medium text-gray-900">{{ u.name }}</div>
+          <div class="text-gray-400 text-xs">{{ u.email }}</div>
+          {% if u.is_admin %}
+          <span class="text-xs text-purple-600 font-medium">admin</span>
+          {% endif %}
+        </td>
+        <td class="px-6 py-4 text-gray-600">{{ meta.active_key_count }}</td>
+        <td class="px-6 py-4 text-gray-500 text-xs">
+          {{ meta.last_active[:10] if meta.last_active else "—" }}
+        </td>
+        <td class="px-6 py-4 text-gray-600">{{ usage.api_calls }}</td>
+        <td class="px-6 py-4 text-gray-600">{{ usage.fix_jobs }}</td>
+        <td class="px-6 py-4 text-gray-600">{{ usage.mcp_calls }}</td>
+        <td class="px-6 py-4 text-gray-600">${{ "%.2f"|format(usage.total_cost_usd) }}</td>
+        <td class="px-6 py-4">
+          {% if u.write_access %}
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-green-600 font-medium">Enabled</span>
+            <form method="post" action="/admin/users/{{ u.id }}/write-access">
+              <input type="hidden" name="value" value="0">
+              <button type="submit"
+                      class="text-xs text-red-500 hover:text-red-700 underline">Revoke</button>
+            </form>
+          </div>
+          {% else %}
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-gray-400">Read-only</span>
+            <form method="post" action="/admin/users/{{ u.id }}/write-access">
+              <input type="hidden" name="value" value="1">
+              <button type="submit"
+                      class="text-xs text-blue-600 hover:text-blue-800 underline">Grant</button>
+            </form>
+          </div>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8" class="px-6 py-10 text-center text-gray-400">
+          No users have signed in yet.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<p class="text-gray-400 text-xs mt-4">
+  Usage data pulled from <code>~/jarvis/logs/api_requests.jsonl</code>,
+  <code>fix_audit.jsonl</code>, and <code>mcp_audit.jsonl</code>.
+  Only requests made with per-user jrv_ keys are attributed here.
+</p>
+{% endblock %}
+  <!-- Budget editor — minimal inline form per user (added 2026-06-11) -->
+  <p class="mt-4 text-xs text-gray-500">To change a user's daily cap, POST <code>/admin/users/&lt;id&gt;/budget</code> with form field <code>daily_budget_usd</code> (0-1000). The dashboard table will show updated values on refresh.</p>

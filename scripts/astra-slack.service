@@ -1,0 +1,33 @@
+[Unit]
+Description=Jarvis Slack bot (jupitermoney pilot)
+After=network-online.target docker.service
+Wants=network-online.target
+OnFailure=jarvis-failure-notify@%n.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/jarvis/scripts
+ExecStart=/home/ubuntu/jarvis/scripts/run_slackbot.sh
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+# Graceful drain: bot's SIGTERM handler waits up to 120s for in-flight queries
+# before exiting. Allow systemd 150s before falling back to SIGKILL.
+KillSignal=SIGTERM
+TimeoutStopSec=150
+
+# Append to the same log file usage_report.py already reads from.
+StandardOutput=append:/home/ubuntu/jarvis/logs/slackbot.log
+StandardError=append:/home/ubuntu/jarvis/logs/slackbot.log
+
+# Light hardening
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,25 @@
+name: PR Semgrep Scan
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+      - develop
+  schedule:
+    - cron: '30 3 * * 0'
+  workflow_dispatch:
+
+jobs:
+  semgrep-scan:
+    uses: jupitermoney/security-automations/.github/workflows/semgrep-reusable-workflow.yml@develop
+    with:
+      repo-name: ${{ github.repository }}
+      pr-initiator: ${{ github.event.pull_request.user.login }}
+      highlight-findings: true
+    secrets:
+      SEMGREP_API_URL: ${{ secrets.SEMGREP_API_URL }}
+      SEMGREP_SLACK_BOT_TOKEN: ${{ secrets.SEMGREP_SLACK_BOT_TOKEN }}
+      SEMGREP_SLACK_SIGNING_SECRET: ${{ secrets.SEMGREP_SLACK_SIGNING_SECRET }}
+      SEMGREP_GITHUB_TOKEN: ${{ secrets.SEMGREP_GITHUB_TOKEN }}
+      SEMGREP_API_KEY: ${{ secrets.SEMGREP_API_KEY }}

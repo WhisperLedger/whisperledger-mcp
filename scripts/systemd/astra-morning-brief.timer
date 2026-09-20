@@ -1,0 +1,10 @@
+[Unit]
+Description=Run Jarvis morning brief daily at 09:00 IST (03:30 UTC)
+
+[Timer]
+OnCalendar=*-*-* 03:30:00 UTC
+Persistent=false
+Unit=jarvis-morning-brief.service
+
+[Install]
+WantedBy=timers.target

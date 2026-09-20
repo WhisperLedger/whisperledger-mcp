@@ -1,0 +1,11 @@
+[Unit]
+Description=Jarvis morning brief — daily personalized DM to portal users
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=ubuntu
+ExecStart=/home/ubuntu/jarvis/scripts/run_morning_brief.sh
+StandardOutput=append:/home/ubuntu/jarvis/logs/morning_brief.log
+StandardError=inherit

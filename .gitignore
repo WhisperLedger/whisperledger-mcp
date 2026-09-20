@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+
+# Claude Code per-user settings
+.claude/
+
+# Secrets — should never appear locally, but defensive
+.env
+.env.*
+*.pem
+*.key
+
+# Local-only artifacts (the actual indexed repos and the vector store live on the
+# remote box, not in this repo). Defensive globs in case anyone runs the indexer
+# locally.
+repos/
+index/
+qdrant_storage/
+slack_users.json
+*.log
+
+# Reports / batch outputs
+batch_*.html
+batch_*.jsonl
+jarvis-demo.png
+jarvis-demo.pdf
+
+# Runtime dirs — never commit
+# logs/ contains qa_log.jsonl, claudify_audit.jsonl, etc. (user queries — PII)
+# state/ holds in-flight task state for the agent
+# workspaces/ holds claudify ephemerals (clones of jupitermoney repos, large)
+logs/
+state/
+workspaces/

@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily workspace garbage collection (4:00 AM IST = 22:30 UTC)
+
+[Timer]
+OnCalendar=*-*-* 22:30:00 UTC
+Persistent=true
+RandomizedDelaySec=300
+Unit=jarvis-gc.service
+
+[Install]
+WantedBy=timers.target

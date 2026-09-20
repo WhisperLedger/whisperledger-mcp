@@ -1,0 +1,4 @@
+qdrant-client>=1.18
+voyageai>=0.3
+anthropic>=0.40
+tiktoken>=0.7

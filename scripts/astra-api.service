@@ -1,0 +1,31 @@
+[Unit]
+Description=Jarvis HTTP API (for SRE bot + other programmatic callers)
+After=network-online.target docker.service
+Wants=network-online.target
+OnFailure=jarvis-failure-notify@%n.service
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/jarvis/scripts
+ExecStart=/home/ubuntu/jarvis/scripts/run_api.sh
+Restart=on-failure
+RestartSec=5
+StartLimitIntervalSec=60
+StartLimitBurst=10
+
+StandardOutput=append:/home/ubuntu/jarvis/logs/api.log
+StandardError=append:/home/ubuntu/jarvis/logs/api.log
+
+# Light hardening
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+# Graceful shutdown — uvicorn handles SIGTERM cleanly
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

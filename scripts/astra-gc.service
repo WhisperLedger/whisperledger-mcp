@@ -1,0 +1,15 @@
+[Unit]
+Description=Astra workspace garbage collector
+After=network.target
+OnFailure=astra-failure-notify@%n.service
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+ExecStart=/home/ubuntu/jarvis/scripts/gc_workspaces.sh
+StandardOutput=append:/home/ubuntu/jarvis/logs/gc.log
+StandardError=append:/home/ubuntu/jarvis/logs/gc.log
+
+[Install]
+WantedBy=multi-user.target

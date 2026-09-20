@@ -1,0 +1,16 @@
+[Unit]
+Description=Jarvis iterate auto-fire poller (one-shot, fired by timer every 5 min)
+After=jarvis-api.service network-online.target
+Wants=jarvis-api.service
+
+[Service]
+Type=oneshot
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/jarvis/scripts
+ExecStart=/home/ubuntu/jarvis/scripts/run_iterate_auto_fire.sh
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

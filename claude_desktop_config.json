@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "whisperledger": {
+      "command": "python3",
+      "args": [
+        "/Users/tanmayagarwal/TanmayProjects/whisperledger-mcp/mcp_server.py"
+      ],
+      "env": {
+        "PYTHONPATH": "/Users/tanmayagarwal/TanmayProjects/whisperledger-mcp"
+      }
+    }
+  }
+}

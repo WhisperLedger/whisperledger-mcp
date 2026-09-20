@@ -1,0 +1,58 @@
+{
+  "_about": "Operator-curated supplements to the auto-discovered service registry. Auto-discovered fields are preserved; manual entries are merged in. Reasons we need this file: (a) Route53 cross-cluster URLs aren't hardcoded in code (platform-eng confirms over Slack), (b) some services serve under different URL prefixes than their name suggests, (c) acronym aliases (llm = Loan Lifecycle Manager).",
+  "services": {
+    "lending-lifecycle-manager-ms": {
+      "aliases": ["LLM", "llm", "Loan Lifecycle Manager"],
+      "framework": "Play/Scala",
+      "source_repo": "lending-lifecycle-manager",
+      "spec_file": "public/specs/specs.json",
+      "r53": [
+        {
+          "url": "http://lending-lifecycle-manager-ms.lending-v2prod.internal",
+          "account": "lending-v2prod",
+          "port": "default",
+          "_confirmed_by": "Nikhil Kataria, platform-eng",
+          "_confirmed_at": "2026-05-30"
+        }
+      ],
+      "auth": "x-user-id + x-tenant (internal-cluster-trust; no credential auth)",
+      "notes": "Cross-cluster callers (Aura in AI cluster, etc.) MUST use the .lending-v2prod.internal URL; the .jupiter.svc.cluster.local form only resolves from inside jupiterprod."
+    },
+    "deposit-manager-ms": {
+      "aliases": ["legacy deposit service"],
+      "source_repo": "jupiter-investments",
+      "spec_file": "investment-deposit/src/main/resources/specs/v1/api.yaml",
+      "manual_paths": [
+        "/investment-deposit/v1/deposit-providers",
+        "/investment-deposit/v1/deposit-provider-plans/{providerId}",
+        "/investment-deposit/v1/plans",
+        "/investment-deposit/v1/initiate",
+        "/investment-deposit/v1/transactions",
+        "/investment-deposit/v1/health"
+      ],
+      "notes": "LEGACY. Active deposit service is now deposit-platform-blostem in investmentprod. Some consumers (banking/dcms, gateway/graphQL) still reference cbs:9026; their Feign clients (e.g. gateway/graphQL/InvestmentDepositClient.kt) may declare paths that no longer exist on the deployed instance — verified 2026-05-29."
+    },
+    "deposit-platform-blostem": {
+      "aliases": ["deposit-platform", "Deposit Platform"],
+      "source_repo": "jupiter-investments",
+      "spec_file": "deposit-platform/src/main/resources/specs/v1/api.yaml",
+      "manual_paths": [
+        "/deposit/v1/fixed-deposit/create",
+        "/deposit/v1/fixed-deposit/close",
+        "/deposit/v1/fixed-deposit/initiate",
+        "/deposit/v1/fixed-deposit/enquiry",
+        "/deposit/v1/dashboard",
+        "/deposit/v1/plan/{planId}",
+        "/deposit/v1/deposit-account-providers",
+        "/deposit/v1/deposit-account-plans",
+        "/deposit/v1/order/orders",
+        "/deposit/v1/order/{depositId}",
+        "/deposit/v1/transaction/transactions",
+        "/deposit/v1/transaction/{transactionId}",
+        "/deposit/v1/trigger-deposit-renewal/{depositId}",
+        "/deposit/v1/enquiry/withdrawal"
+      ],
+      "notes": "ACTIVE deposit service (replaces legacy deposit-manager-ms). v2 variants of several endpoints (e.g. /deposit/v2/order/{depositId}, /deposit/v2/fixed-deposit/create) also exist."
+    }
+  }
+}
