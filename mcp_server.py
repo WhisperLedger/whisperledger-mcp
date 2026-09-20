@@ -142,6 +142,29 @@ TOOLS = [
             },
             "required": ["query"]
         }
+    },
+    {
+        "name": "org_review_pull_request",
+        "description": "Inspect PR diff, verify architecture boundaries, audit for secrets, and post automated code review verdict.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "repo": {
+                    "type": "string",
+                    "description": "Target repository name",
+                },
+                "pr_number": {
+                    "type": "integer",
+                    "description": "Pull Request number to review",
+                },
+                "submit_review": {
+                    "type": "boolean",
+                    "description": "Whether to submit the comment directly to GitHub PR",
+                    "default": False
+                }
+            },
+            "required": ["repo", "pr_number"]
+        }
     }
 ]
 
@@ -184,6 +207,13 @@ def dispatch_tool(name: str, args: Dict[str, Any]) -> Any:
         title = args.get("title", "Update")
         body = args.get("body", "Automated PR from Pitcher Console MCP Operator")
         return operator.create_pull_request(repo, branch, title, body)
+
+    # Handle pull request review
+    elif name in ["org_review_pull_request", "whisperledger_review_pull_request"]:
+        repo = args.get("repo", "whisperledger-backend")
+        pr_number = args.get("pr_number", 1)
+        submit = args.get("submit_review", False)
+        return operator.review_pull_request(repo, pr_number, submit)
 
     # Handle deployment trigger
     elif name in ["org_trigger_deployment", "whisperledger_trigger_deployment"]:

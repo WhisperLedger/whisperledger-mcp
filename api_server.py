@@ -256,8 +256,33 @@ class MCPHttpHandler(BaseHTTPRequestHandler):
                     "- Zero downtime recorded."
                 )
 
-            # Pull request
-            elif any(k in lowered for k in ["pr", "pull request", "branch"]):
+            # Review Pull request
+            elif "review pr" in lowered or "pr review" in lowered or "review pull" in lowered:
+                tool_invoked = "org_review_pull_request"
+                # extract pr number if given, default to 1
+                pr_num = 1
+                for word in user_msg.replace("#", " ").split():
+                    if word.isdigit():
+                        pr_num = int(word)
+                        break
+                target_repo = "pitcher-console"
+                for r in operator.get_repositories():
+                    if r.get("name", "").lower() in lowered:
+                        target_repo = r.get("name")
+                        break
+                tool_output = operator.review_pull_request(target_repo, pr_num, submit_review=False)
+                findings_str = "\n".join([f"- {f}" for f in tool_output.get('findings', [])])
+                response_text = (
+                    f"### Autonomous PR Review: `{tool_output.get('repository')}` #{pr_num}\n\n"
+                    f"- **Title**: {tool_output.get('title')}\n"
+                    f"- **Author**: `{tool_output.get('author')}`\n"
+                    f"- **Files Changed**: {tool_output.get('files_changed')}\n"
+                    f"- **Verdict**: **{tool_output.get('verdict')}**\n\n"
+                    f"**Automated Analysis:**\n{findings_str}"
+                )
+
+            # Pull request creation
+            elif any(k in lowered for k in ["create pr", "raise pr", "open pr", "pr", "pull request", "branch"]):
                 tool_invoked = "org_create_pull_request"
                 args = {
                     "repo": "pitcher-console",
